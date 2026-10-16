@@ -1,4 +1,4 @@
-#include <std_lib_facilities.h>
+#include "std_lib_facilities.h"
 #include <random>
 
 int count(const vector<char>& nums, char num)
@@ -100,9 +100,6 @@ try
     // код чтобы пользователь сам вводил загаданное число
 
     vector<char> guessing_num = random_num();
-    for (int i = 0; i < guessing_num.size(); ++i)
-        cout << guessing_num[i];
-    cout << endl;
 
     int bulls{0};
 
