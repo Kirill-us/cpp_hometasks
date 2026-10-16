@@ -11,18 +11,6 @@ int count(const vector<char>& nums, char num)
     return k;
 }
 
-
-// void validate(const vector<char>& num) 
-// {
-//     for (int i = 0; i < num.size(); ++i) 
-//     {
-//       if (num[i] < '0' || '9' < num[i])
-//         error("input is not a digit");
-//       if (count(num, num[i]) != 1)
-//         error("input are not unique");
-//     }
-// }
-
 vector<char> user_guess () {
     vector<char> num(4);
 
