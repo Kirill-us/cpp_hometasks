@@ -11,57 +11,69 @@ int count(const vector<char>& nums, char num)
     return k;
 }
 
-vector<char> user_guess () {
+bool is_valid(const vector<char>& number)
+{
+    for (size_t i = 0; i < number.size(); ++i)
+    {
+        if (number[i] < '0' || '9' < number[i])
+            return false;
+        if (count(number, number[i]) != 1)
+            return false;
+    }
+    return true;
+}
+
+
+vector<char> user_guess (const string& prompt) {
     vector<char> num(4);
 
     while (true)
     {
-        cout << "guess the number\n";
-        for (int i = 0; i < num.size(); ++i)
-            cin >> num[i];
+        cout << prompt << "\n";
+        string s;
+        cin >> s;
         
         if (!cin)
             error("invalid input");
         
-        bool a = true;
-
-        for (int i = 0; i < num.size(); ++i) 
+        if (s.size() != 4)
         {
-            if ((num[i] < '0' || num[i] > '9') || (count(num, num[i]) != 1)) {
-                cout << "enter a normal number\n";
-                a = false;
-                break;
-            }
+            cout << "enter exactly 4 digits\n";
+            continue;
         }
 
-        if (a)
+        vector<char> num(s.begin(), s.end());
+
+        if (is_valid(num))
             return num;
+
+        cout << "enter a normal number\n";
     }
 }
 
-vector<char> random_num()
-{
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<char> distrib('0', '9');
+// vector<char> random_num()
+// {
+//     random_device rd;
+//     mt19937 gen(rd());
+//     uniform_int_distribution<char> distrib('0', '9');
 
-    vector<char> num;
+//     vector<char> num;
 
-    while (num.size() < 4)
-    {
-        char d = distrib(gen);
-        bool dup = false;
+//     while (num.size() < 4)
+//     {
+//         char d = distrib(gen);
+//         bool dup = false;
 
-        for (int i = 0; i < num.size(); ++i)
-            if (num[i] == d)
-                dup = true;
+//         for (int i = 0; i < num.size(); ++i)
+//             if (num[i] == d)
+//                 dup = true;
 
-        if (!dup)
-            num.push_back(d);
-    }
+//         if (!dup)
+//             num.push_back(d);
+//     }
 
-    return num;
-}
+//     return num;
+// }
 
 
 int main()
@@ -74,20 +86,13 @@ try
        << "<Cow> means right digit in the wrong position.\n"
        << "\n"
        << "game is on" << "\n"
-       << "\n"
-       << "enter the guessing number:" << endl;
+       << "\n";
 
-    // vector<char> guessing_num(4);
-    // for (int i=0; i < guessing_num.size(); ++i)
-    //     cin >> guessing_num[i];
-    // if (!cin)
-    //     error("invalid input");
-    
-    // validate(guessing_num);
+    vector<char> guessing_num = user_guess("enter the guessing number:");
 
     // код чтобы пользователь сам вводил загаданное число
 
-    vector<char> guessing_num = random_num();
+    // vector<char> guessing_num = random_num();
 
     int bulls{0};
 
@@ -95,7 +100,7 @@ try
     {
         bulls = 0;
         int cows{0};
-        vector<char> try_guess = user_guess();
+        vector<char> try_guess = user_guess("guess the number");
 
         for (int i = 0; i < try_guess.size(); ++i) {
             if (guessing_num[i] == try_guess[i])
