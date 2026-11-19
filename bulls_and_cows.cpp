@@ -5,7 +5,7 @@ int count(const vector<char>& nums, char num)
 {
     int k{};
 
-    for (int i = 0; i < nums.size(); ++i)
+    for (size_t i = 0; i < nums.size(); ++i)
         if (nums[i] == num)
             ++k;
     return k;
@@ -25,7 +25,6 @@ bool is_valid(const vector<char>& number)
 
 
 vector<char> user_guess (const string& prompt) {
-    vector<char> num(4);
 
     while (true)
     {
@@ -102,7 +101,7 @@ try
         int cows{0};
         vector<char> try_guess = user_guess("guess the number");
 
-        for (int i = 0; i < try_guess.size(); ++i) {
+        for (size_t i = 0; i < try_guess.size(); ++i) {
             if (guessing_num[i] == try_guess[i])
                 ++bulls;
             else if (count(guessing_num, try_guess[i]) == 1)
