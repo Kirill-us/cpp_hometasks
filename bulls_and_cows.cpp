@@ -1,5 +1,6 @@
 #include "std_lib_facilities.h"
-#include <random>
+#include <string>
+#include <iostream>
 
 int count(const vector<char>& nums, char num)
 {
@@ -23,56 +24,112 @@ bool is_valid(const vector<char>& number)
     return true;
 }
 
+pair<int, int> count_bac(const vector<char>& number, const vector<char>& guess)
+{
+    int bulls = 0;
+    int cows = 0;
 
-vector<char> user_guess (const string& prompt) {
-
-    while (true)
+    for (size_t i = 0; i < number.size(); ++i)
     {
-        cout << prompt << "\n";
+        if (number[i] == guess[i])
+            ++bulls;
+        else if (count(number, guess[i]) == 1)
+            ++cows;
+    }
+
+    return {bulls, cows};
+}
+
+vector<vector<char>> generate_numbers()
+{
+    vector<vector<char>> numbers;
+
+    for (int i = 0; i < 10000; ++i)
+    {
         string s;
-        cin >> s;
-        
-        if (!cin)
-            error("invalid input");
-        
+        s = to_string(i);
+
         if (s.size() != 4)
-        {
-            cout << "enter exactly 4 digits\n";
             continue;
-        }
 
         vector<char> num(s.begin(), s.end());
 
         if (is_valid(num))
-            return num;
+            numbers.push_back(num);
+    }
 
-        cout << "enter a normal number\n";
+    return numbers;
+}
+
+
+pair<int, int> user_feedback()
+{
+    int bulls, cows;
+
+    while (true) {
+        cout << "How many bulls?\n";
+        cin >> bulls;
+
+        cout << "How many cows?\n";
+        cin >> cows;
+
+        if (!cin)
+            error("invalid input");
+        
+        if (bulls >= 0 && cows >= 0 && bulls <= 4 && cows <= 4 && bulls+cows <= 4)
+            return {bulls, cows};
+
+        cout << "Invalid result. Try again.\n";
     }
 }
 
-// vector<char> random_num()
-// {
-//     random_device rd;
-//     mt19937 gen(rd());
-//     uniform_int_distribution<char> distrib('0', '9');
+void computer_guess()
+{
+    vector<vector<char>> try_num = generate_numbers();
+    int attempts = 0;
 
-//     vector<char> num;
+    while (!try_num.empty())
+    {
+        vector<char> guess = try_num[0];
 
-//     while (num.size() < 4)
-//     {
-//         char d = distrib(gen);
-//         bool dup = false;
+        ++attempts;
 
-//         for (int i = 0; i < num.size(); ++i)
-//             if (num[i] == d)
-//                 dup = true;
+        for (char c: guess) 
+            cout << c;
+        cout << endl;
+        
 
-//         if (!dup)
-//             num.push_back(d);
-//     }
+        pair<int, int> result = user_feedback();
+        int bulls = result.first;
+        int cows = result.second;
 
-//     return num;
-// }
+        if (bulls == 4)
+        {
+            cout << "Computer guessed your number!\n";
+            cout << "Attempts: " << attempts << endl;
+            return;
+        }
+
+        vector<vector<char>> remaining;
+
+        for (const auto& num : try_num)
+        {
+            pair<int, int> check = count_bac(num, guess);
+
+            if (check.first == bulls && check.second == cows)
+                remaining.push_back(num);
+        }
+
+        try_num = remaining;
+
+        if (try_num.empty())
+        {
+            cout << "Your answers are inconsistent!\n";
+            return;
+        }
+
+    }
+}
 
 
 int main()
@@ -87,32 +144,12 @@ try
        << "game is on" << "\n"
        << "\n";
 
-    vector<char> guessing_num = user_guess("enter the guessing number:");
+    cout << "Think of a 4-digit number with unique digits.\n";
+    cout << "Computer will try to guess it!\n\n";
 
-    // код чтобы пользователь сам вводил загаданное число
-
-    // vector<char> guessing_num = random_num();
-
-    int bulls{0};
-
-    do
-    {
-        bulls = 0;
-        int cows{0};
-        vector<char> try_guess = user_guess("guess the number");
-
-        for (size_t i = 0; i < try_guess.size(); ++i) {
-            if (guessing_num[i] == try_guess[i])
-                ++bulls;
-            else if (count(guessing_num, try_guess[i]) == 1)
-                ++cows;
-        }
-        cout << bulls << " bull(s) and " << cows << " cow(s)" << endl;
-    }
-    while (bulls != 4);
-
-    cout << "game is over" << endl;
+    computer_guess();
 }
+
 catch (exception& e)
 {
   cerr << e.what() << endl;
